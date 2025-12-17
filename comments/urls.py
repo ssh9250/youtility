@@ -1,0 +1,11 @@
+from django.urls import path, include
+from rest_framework import routers
+
+from .views import CommentViewSet
+
+router = routers.DefaultRouter()
+router.register('', CommentViewSet, basename='comment')
+
+urlpatterns = [
+    path('list/', include(router.urls)),
+]

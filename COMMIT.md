@@ -1,7 +1,5 @@
-Chore: 프로젝트 초기 설정
-
-- Django 6.0 및 Python 3.14 환경 구성
-- Django REST Framework 3.16.1 추가
-- comments 앱 생성
-- 개발 도구 설정 (Black, Ruff, Pytest)
-- uv 패키지 매니저로 의존성 관리
+Feat: Comment API 기본 구조 구현
+- Comment 모델 구현 (Youtube 댓글 데이터 구조)
+- REST API ViewSet 및 Serializer 추가
+- API 엔드포인트 설정 (/api/comments/)
+- 좋아요 수 기준 정렬 기능 추가
