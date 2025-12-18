@@ -13,3 +13,14 @@ class CommentCreateSerializer(BaseCommentSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+        snippet = self.initial_data.get('snippet', {})
+
+        for k in snippet:
+            authorDisplayName = snippet.get('authorDisplayName')
+            authorChannelUrl = snippet.get('authorChannelUrl')
+            textDisplay = snippet.get('textDisplay')
+            textOriginal = snippet.get('textOriginal')
+            likeCount = snippet.get('likeCount')
+            publishedAt = snippet.get('publishedAt')
+            updatedAt = snippet.get('updatedAt')
+

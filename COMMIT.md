@@ -1,5 +1,8 @@
-Feat: Comment API 기본 구조 구현
-- Comment 모델 구현 (Youtube 댓글 데이터 구조)
-- REST API ViewSet 및 Serializer 추가
-- API 엔드포인트 설정 (/api/comments/)
-- 좋아요 수 기준 정렬 기능 추가
+## Create Serializer 작성
+- create 메소드 상세 파악
+
+
+## 전체 메커니즘 한번 더 환기
+- 메인 화면에서 comment -> 유튜브 링크 입력하고 get 버튼 누르면 댓글 목록 뜨게끔
+- get 버튼 api -> 프론트에서 api 조립할건지, 백엔드에서 할건지
+
