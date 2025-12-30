@@ -19,7 +19,6 @@ DATABASES = {
 }
 
 YOUTUBE_DATA_API_V3_SECRET = config("YOUTUBE_DATA_API_V3_SECRET")
-YOUTUBE_DATA_API_V3_URL = config("YOUTUBE_DATA_API_V3_URL")
 
 ALLOWED_HOSTS = []
 
@@ -33,6 +32,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    'rest_framework',
+    'drf_spectacular',
+
+    'core',
+    'comments',
+
 ]
 
 MIDDLEWARE = [
@@ -46,6 +52,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "Youtility.urls"
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
 
 TEMPLATES = [
     {
@@ -78,6 +88,13 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'YOUTILITY',
+    'DESCRIPTION': 'API documentation for YOUTILITY',
+    'VERSION': '0.0.1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 LANGUAGE_CODE = "en-us"
 
