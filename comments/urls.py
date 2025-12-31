@@ -7,5 +7,5 @@ router = routers.DefaultRouter()
 router.register('', CommentViewSet, basename='comment')
 
 urlpatterns = [
-    path('list/', include(router.urls)),
+    path('', include(router.urls)),
 ]

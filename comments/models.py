@@ -1,6 +1,10 @@
 from django.db import models
 
 class Comment(models.Model):
+    comment_id = models.CharField(
+        max_length=255, verbose_name='댓글 id'
+    )
+    video_id = models.CharField(max_length=255, verbose_name='동영상 id')
     authorDisplayName = models.CharField(max_length=100, verbose_name='작성자')
     authorChannelUrl = models.TextField(blank=True, verbose_name='작성자 채널 주소')
     textDisplay = models.TextField(blank=True, verbose_name='내용')

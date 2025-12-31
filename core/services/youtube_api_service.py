@@ -62,7 +62,7 @@ class YoutubeAPIService:
     def list_comment_threads(
             self,
             video_id: str,
-            part: str = 'snippet%2Creplies',
+            part: str = 'snippet',
             max_results: int = 200,
             page_token: Optional[str] = None
     ) -> Dict[str, Any]:
