@@ -52,6 +52,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         comments_data = []
 
-        for item in api_response:
+        for item in api_response.get('items', []):
+            snippet = item['snippet']['topLevelComment']['snippet']
+
+            comments_data = {
+                'video_id': video_id,
+                'comment_id': item['id'],
+                'comment_text': snippet['text'],
+                'comment_date': snippet['publishedAt'],
+            }
 
 
