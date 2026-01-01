@@ -18,21 +18,22 @@ class CommentViewSet(viewsets.ModelViewSet):
     retrieve: 특정 댓글 상세 조회
     fetch_and_save: youtube에서 댓글 가져와서 저장 (custom action)
     """
+
     queryset = Comment.objects.all()
     serializer_class = BaseCommentSerializer
 
     def get_serializer_class(self):
-        if self.action == 'fetch_and_save':
+        if self.action == "fetch_and_save":
             return CommentCreateSerializer
         return BaseCommentSerializer
 
-    @action(detail=False, methods=['post'], url_path='fetch_and_save')
+    @action(detail=False, methods=["post"], url_path="fetch_and_save")
     def fetch_and_save(self, request):
         input_serializer = URLInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
 
-        video_id = input_serializer.validated_data['video_id']
-        max_results = input_serializer.validated_data.get('max_results', 100)
+        video_id = input_serializer.validated_data["video_id"]
+        max_results = input_serializer.validated_data.get("max_results", 100)
 
         youtube_service = YoutubeAPIService()
         all_comments_data = []
@@ -42,61 +43,56 @@ class CommentViewSet(viewsets.ModelViewSet):
             # 모든 댓글을 가져올 때까지 페이징 처리
             while True:
                 api_response = youtube_service.list_comment_threads(
-                    video_id=video_id,
-                    max_results=max_results,
-                    page_token=page_token
+                    video_id=video_id, max_results=max_results, page_token=page_token
                 )
 
                 comments_data = self._process_youtube_response(api_response, video_id)
                 all_comments_data.extend(comments_data)
 
                 # 다음 페이지가 있는지 확인
-                page_token = api_response.get('nextPageToken')
+                page_token = api_response.get("nextPageToken")
                 if not page_token:
                     break
 
         except YouTubeAPIException as e:
-            return Response(
-                {'error': str(e)},
-                status=e.status_code
-            )
+            return Response({"error": str(e)}, status=e.status_code)
 
         if not all_comments_data:
-            return Response(
-                {'message': '댓글이 없습니다.'},
-                status=status.HTTP_200_OK
-            )
+            return Response({"message": "댓글이 없습니다."}, status=status.HTTP_200_OK)
 
         saved_comments = self._bulk_save_comments(all_comments_data)
 
-        return Response({
-            'message': f'{len(saved_comments)}개의 댓글을 저장했습니다.',
-            'video_id': video_id,
-            'total_comments': len(all_comments_data),
-            'saved_comments': len(saved_comments)
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "message": f"{len(saved_comments)}개의 댓글을 저장했습니다.",
+                "video_id": video_id,
+                "total_comments": len(all_comments_data),
+                "saved_comments": len(saved_comments),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
     def _process_youtube_response(
-            self,
-            api_response: dict,
-            video_id: str,
+        self,
+        api_response: dict,
+        video_id: str,
     ) -> list:
 
         comments_data = []
 
-        for item in api_response.get('items', []):
-            snippet = item['snippet']['topLevelComment']['snippet']
+        for item in api_response.get("items", []):
+            snippet = item["snippet"]["topLevelComment"]["snippet"]
 
             comment_data = {
-                'video_id': video_id,
-                'comment_id': item['snippet']['topLevelComment']['id'],
-                'authorDisplayName': snippet['authorDisplayName'],
-                'authorChannelUrl': snippet['authorChannelUrl'],
-                'textDisplay': snippet['textDisplay'],
-                'textOriginal': snippet['textOriginal'],
-                'likeCount': snippet['likeCount'],
-                'publishedAt': snippet['publishedAt'],
-                'updatedAt': snippet['updatedAt'],
+                "video_id": video_id,
+                "comment_id": item["snippet"]["topLevelComment"]["id"],
+                "authorDisplayName": snippet["authorDisplayName"],
+                "authorChannelUrl": snippet["authorChannelUrl"],
+                "textDisplay": snippet["textDisplay"],
+                "textOriginal": snippet["textOriginal"],
+                "likeCount": snippet["likeCount"],
+                "publishedAt": snippet["publishedAt"],
+                "updatedAt": snippet["updatedAt"],
             }
             comments_data.append(comment_data)
 
@@ -104,13 +100,13 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def _bulk_save_comments(
-            self,
-            comments_data: list,
+        self,
+        comments_data: list,
     ) -> list:
         saved_comments = []
 
         for comment in comments_data:
-            if Comment.objects.filter(comment_id=comment['comment_id']).exists():
+            if Comment.objects.filter(comment_id=comment["comment_id"]).exists():
                 continue
 
             serializer = CommentCreateSerializer(data=comment)
@@ -120,11 +116,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         return saved_comments
 
-
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
-        video_id = request.query_params.get('video_id')
+        video_id = request.query_params.get("video_id")
         if video_id:
             queryset = queryset.filter(video_id=video_id)
 

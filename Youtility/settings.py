@@ -32,13 +32,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    'rest_framework',
-    'drf_spectacular',
-    'corsheaders',
-
-    'core',
-    'comments',
+    "rest_framework",
+    "drf_spectacular",
+    "corsheaders",
+    "core",
+    "comments",
 ]
 
 MIDDLEWARE = [
@@ -55,9 +53,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = "Youtility.urls"
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
 }
 
 TEMPLATES = [
@@ -93,10 +91,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'YOUTILITY',
-    'DESCRIPTION': 'API documentation for YOUTILITY',
-    'VERSION': '0.0.1',
-    'SERVE_INCLUDE_SCHEMA': False,
+    "TITLE": "YOUTILITY",
+    "DESCRIPTION": "API documentation for YOUTILITY",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 LANGUAGE_CODE = "en-us"

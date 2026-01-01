@@ -10,3 +10,11 @@
 serializer video_id = serializers...
 serializers/validate_url - pattern, _ in id 
 serializer_isvalid
+
+db 어떻게 되어있는지 확인
+다른 기능 mp3
+serializers check₩
+
+Chore: uv 개발 패키지 분리
+- black, ruff 개발 패키지로 분리 및 전체 프로젝트에 적용
+- .gitignore에 데이터베이스, migrations 관련 설정 추가
