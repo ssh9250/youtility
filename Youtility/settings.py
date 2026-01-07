@@ -3,7 +3,6 @@ from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
@@ -22,7 +21,6 @@ YOUTUBE_DATA_API_V3_SECRET = config("YOUTUBE_DATA_API_V3_SECRET")
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,6 +34,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "corsheaders",
     "core",
+    "todos",
     "comments",
 ]
 
