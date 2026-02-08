@@ -96,3 +96,58 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 ```
+
+---
+
+## Issue 6: Todo 제목 길이 제한 — 검증 로직 위치 설계
+
+**문제:**
+- 할일(Todo) 제목의 길이를 제한해야 하는데, 검증 로직을 어디에 배치할지 결정이 필요
+
+**검토한 3가지 옵션:**
+
+### 옵션 1: Model의 `max_length`로 제한 (채택)
+
+```python
+# models.py
+title = models.CharField(max_length=100)
+```
+
+| 장점 | 단점 |
+|---|---|
+| DB 레벨에서 제약이 걸려 어떤 경로로든 데이터 무결성 보장 | 제한 길이 변경 시 마이그레이션 필요 |
+| Serializer, Form, Admin 등에서 자동으로 max_length 반영 | 에러 메시지 커스터마이징이 제한적 |
+| 단일 진실 원천(Single Source of Truth)으로 관리 용이 | |
+
+### 옵션 2: Serializer의 field 옵션에서 제한
+
+```python
+# serializers.py
+title = serializers.CharField(max_length=100)
+```
+
+| 장점 | 단점 |
+|---|---|
+| 마이그레이션 없이 제한 길이 변경 가능 | DB 레벨 보호 없음 (Shell, Admin 등에서 긴 값 입력 가능) |
+| API 입력 검증에 특화 | Model과 Serializer의 제한이 불일치할 위험 |
+| DRF 표준 에러 응답 자동 생성 | |
+
+### 옵션 3: Serializer의 `validate_<field>` 메서드로 제한
+
+```python
+# serializers.py
+def validate_title(self, value):
+    if len(value) > 100:
+        raise serializers.ValidationError("제목은 100자 이내여야 합니다.")
+    return value
+```
+
+| 장점 | 단점 |
+|---|---|
+| 에러 메시지를 자유롭게 커스터마이징 가능 | 단순 길이 제한에 비해 코드가 과함 (오버엔지니어링) |
+| 조건부 검증 등 복잡한 로직 적용 가능 | DB 레벨 보호 없음 |
+| | 다른 Serializer에서 동일 검증을 반복해야 할 수 있음 |
+
+**결론:**
+- 제목 길이 제한은 단순한 제약 조건이므로, **Model의 `max_length`로 직접 제한하는 옵션 1을 채택**
+- Model에서 정의하면 DB 레벨 무결성이 보장되고, Serializer가 Model 필드 정보를 자동으로 상속받아 중복 정의 없이 일관된 검증이 가능

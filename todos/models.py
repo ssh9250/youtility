@@ -1,7 +1,8 @@
 from django.db import models
 
 class Todo(models.Model):
-    content = models.TextField(verbose_name="할일", default="내용을 입력하세요.")
+    content = models.CharField(max_length=20, null=False, blank=False, verbose_name="할일", default="내용을 입력하세요.")
+    description = models.TextField(verbose_name='상세 설명')
     completed = models.BooleanField(default=False, verbose_name='완료 여부')
     hidden = models.BooleanField(default=False, verbose_name='숨김 여부')
     created = models.DateTimeField(auto_now_add=True, verbose_name="생성일")

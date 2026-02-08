@@ -22,18 +22,19 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = BaseCommentSerializer
 
+    # 액션별로 다른 Serializer 할당, 현재는 의미없음 (fetch and save 에서는 별도의 bulk 메서드 사용)
     def get_serializer_class(self):
-        if self.action == "fetch_and_save":
+        if self.action == "fetch-and-save":
             return CommentCreateSerializer
         return BaseCommentSerializer
 
-    @action(detail=False, methods=["post"], url_path="fetch_and_save")
+    @action(detail=False, methods=["post"], url_path="fetch-and-save") # rest 컨벤션
     def fetch_and_save(self, request):
         input_serializer = URLInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
 
         video_id = input_serializer.validated_data["video_id"]
-        max_results = input_serializer.validated_data.get("max_results", 100)
+        max_results = input_serializer.validated_data.get("max_results", 500)
 
         youtube_service = YoutubeAPIService()
         all_comments_data = []
@@ -109,7 +110,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             if Comment.objects.filter(comment_id=comment["comment_id"]).exists():
                 continue
 
-            serializer = CommentCreateSerializer(data=comment)
+            serializer = BaseCommentSerializer(data=comment)
             if serializer.is_valid():
                 saved_comment = serializer.save()
                 saved_comments.append(saved_comment)

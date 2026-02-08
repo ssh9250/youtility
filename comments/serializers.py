@@ -47,5 +47,5 @@ class BaseCommentSerializer(serializers.ModelSerializer):
 class CommentCreateSerializer(BaseCommentSerializer):
     def validate_comment_id(self, value):
         if Comment.objects.filter(comment_id=value).exists():
-            raise serializers.ValidationError("이미 저장된 댓글입니다.")
+            raise serializers.ValidationError("이미 저장된 댓글입니다.") # 이중체크 비효율적, 에러 발생시 전체 롤백(transaction.atom)
         return value
