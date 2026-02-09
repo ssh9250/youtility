@@ -1,5 +1,8 @@
+from django.db.models import Count, Q
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from todos.models import Todo
 from todos.serializers import BaseTodoSerializer, TodoListSerializer, TodoCreateSerializer, TodoUpdateSerializer, \
@@ -11,14 +14,17 @@ class TodoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         include_hidden = self.request.query_params.get('hidden', 'false').lower() == 'true'
-        base_queryset = Todo.objects.all()
+        completed_param = self.request.query_params.get('completed')
+        queryset = Todo.objects.all()
 
-        # todo: complete 토글 시 완료된 항목 보이기/숨기기 구현하기
+        if not include_hidden:
+            queryset = queryset.filter(hidden=False)
 
-        if include_hidden:
-            return base_queryset
-        else:
-            return base_queryset.filter(hidden=False)
+        if completed_param is not None:
+            is_completed = completed_param.lower() == 'true'
+            queryset = queryset.filter(completed=is_completed)
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -31,7 +37,30 @@ class TodoViewSet(viewsets.ModelViewSet):
             return TodoDetailSerializer
         return BaseTodoSerializer
 
-    # todo: 할일 뷰셋 작성 마저 진행
-    # todo: include_hidden 토글 시 쿼리 어떻게 처리하는지 확인
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+    @action(detail=True, methods=['patch'], url_path='toggle')
+    def toggle(self, request, pk=None):
+        todo = self.get_object()
+        todo.completed = not todo.completed
+        todo.save()
+        serializer = self.get_serializer(todo)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['patch'], url_path='hide')
+    def hide(self, request, pk=None):
+        todo = self.get_object()
+        todo.hidden = not todo.hidden
+        todo.save()
+        serializer = self.get_serializer(todo)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], url_path='stats')
+    def stats(self, request):
+        todos = self.get_queryset()
+
+        stats = todos.aggregate(
+            total_count=Count('id'),
+            completed_count=Count('id', filter=Q(completed=True)),
+            pending_count=Count('id', filter=Q(completed=False)),
+        )
+
+        return Response(stats)

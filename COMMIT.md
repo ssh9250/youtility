@@ -26,3 +26,9 @@ Feat: Todo ViewSet 및 모델 개선 / Comments 리팩토링
 - Todo ViewSet: 기본 CRUD 구조 작성, hidden 필터링 구현
 - Comments ViewSet: url_path를 REST 컨벤션(fetch-and-save)으로 수정, max_results 500으로 변경, bulk 저장 시 BaseCommentSerializer 사용으로 변경
 - ISSUE.md: Todo 제목 길이 제한 검증 로직 위치 설계 문서화 (Issue 6)
+
+Feat: Todo ViewSet 커스텀 액션 추가 및 queryset 필터링 개선
+- Todo ViewSet: toggle, hide, stats 커스텀 액션 추가
+- get_queryset: completed 파라미터 필터링 추가
+- stats: aggregate 단일 쿼리로 통계 조회 구현
+- ISSUE.md: stats 다중 쿼리 → 단일 쿼리 개선 문서화 (Issue 7)

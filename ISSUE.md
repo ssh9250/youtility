@@ -151,3 +151,38 @@ def validate_title(self, value):
 **결론:**
 - 제목 길이 제한은 단순한 제약 조건이므로, **Model의 `max_length`로 직접 제한하는 옵션 1을 채택**
 - Model에서 정의하면 DB 레벨 무결성이 보장되고, Serializer가 Model 필드 정보를 자동으로 상속받아 중복 정의 없이 일관된 검증이 가능
+
+---
+
+## Issue 7: Todo stats 액션 — 다중 쿼리에서 단일 쿼리로 개선
+
+**문제:**
+- Todo 통계(전체/완료/미완료 개수)를 조회할 때 쿼리를 3번 개별적으로 실행
+
+**변경 전 (쿼리 3회):**
+```python
+def stats(self, request):
+    todos = self.get_queryset()
+    total = todos.count()                          # 쿼리 1
+    completed = todos.filter(completed=True).count()   # 쿼리 2
+    pending = todos.filter(completed=False).count()    # 쿼리 3
+    return Response({...})
+```
+
+**변경 후 (쿼리 1회):**
+```python
+def stats(self, request):
+    todos = self.get_queryset()
+    stats = todos.aggregate(
+        total_count=Count('id'),
+        completed_count=Count('id', filter=Q(completed=True)),
+        pending_count=Count('id', filter=Q(completed=False)),
+    )
+    return Response(stats)
+```
+
+**장점:**
+- DB 왕복 3회 → 1회로 감소하여 네트워크 오버헤드 및 응답 시간 개선
+- `aggregate`는 단일 SQL에서 `COUNT`와 `CASE WHEN`으로 처리되어 DB가 테이블을 한 번만 스캔
+- 3개의 값이 동일 시점의 스냅샷에서 계산되므로 데이터 정합성 보장 (다중 쿼리 시 사이에 데이터 변경 가능성 존재)
+- 통계 항목이 추가되어도 쿼리 수가 늘어나지 않아 확장에 유리
