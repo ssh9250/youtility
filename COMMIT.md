@@ -32,3 +32,9 @@ Feat: Todo ViewSet 커스텀 액션 추가 및 queryset 필터링 개선
 - get_queryset: completed 파라미터 필터링 추가
 - stats: aggregate 단일 쿼리로 통계 조회 구현
 - ISSUE.md: stats 다중 쿼리 → 단일 쿼리 개선 문서화 (Issue 7)
+
+Feat: Comment 모델 snake_case 전환 및 stats 액션 추가
+- Comment 모델: 필드명 camelCase → snake_case로 변경
+- Comments ViewSet: get_queryset 오버라이드로 video_id 필터링 추가, stats/stats_timeline 액션 추가
+- ISSUE.md: 쿼리 파라미터 필터링 설계 문서화 (Issue 8)
+- pyproject.toml: konlpy 패키지 추가

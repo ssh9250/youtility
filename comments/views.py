@@ -1,5 +1,9 @@
+from typing import Counter
+
 from django.db import transaction
-from django.shortcuts import render
+from django.db.models import Count, Avg, Max
+from django.db.models.functions import TruncDate
+from konlpy.tag import Okt
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,8 +23,16 @@ class CommentViewSet(viewsets.ModelViewSet):
     fetch_and_save: youtube에서 댓글 가져와서 저장 (custom action)
     """
 
-    queryset = Comment.objects.all()
     serializer_class = BaseCommentSerializer
+
+    def get_queryset(self):
+        queryset = Comment.objects.all()
+
+        video_id = self.request.query_params.get("video_id")
+        if video_id:
+            queryset = queryset.filter(video_id=video_id)
+
+        return queryset
 
     # 액션별로 다른 Serializer 할당, 현재는 의미없음 (fetch and save 에서는 별도의 bulk 메서드 사용)
     def get_serializer_class(self):
@@ -28,7 +40,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             return CommentCreateSerializer
         return BaseCommentSerializer
 
-    @action(detail=False, methods=["post"], url_path="fetch-and-save") # rest 컨벤션
+    @action(detail=False, methods=["post"], url_path="fetch-and-save")  # rest 컨벤션
     def fetch_and_save(self, request):
         input_serializer = URLInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
@@ -74,9 +86,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         )
 
     def _process_youtube_response(
-        self,
-        api_response: dict,
-        video_id: str,
+            self,
+            api_response: dict,
+            video_id: str,
     ) -> list:
 
         comments_data = []
@@ -87,13 +99,13 @@ class CommentViewSet(viewsets.ModelViewSet):
             comment_data = {
                 "video_id": video_id,
                 "comment_id": item["snippet"]["topLevelComment"]["id"],
-                "authorDisplayName": snippet["authorDisplayName"],
-                "authorChannelUrl": snippet["authorChannelUrl"],
-                "textDisplay": snippet["textDisplay"],
-                "textOriginal": snippet["textOriginal"],
-                "likeCount": snippet["likeCount"],
-                "publishedAt": snippet["publishedAt"],
-                "updatedAt": snippet["updatedAt"],
+                "author_display_name": snippet["authorDisplayName"],
+                "author_channel_url": snippet["authorChannelUrl"],
+                "text_display": snippet["textDisplay"],
+                "text_original": snippet["textOriginal"],
+                "like_count": snippet["likeCount"],
+                "published_at": snippet["publishedAt"],
+                "updated_at": snippet["updatedAt"],
             }
             comments_data.append(comment_data)
 
@@ -101,8 +113,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def _bulk_save_comments(
-        self,
-        comments_data: list,
+            self,
+            comments_data: list,
     ) -> list:
         saved_comments = []
 
@@ -131,3 +143,61 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="stats")
+    def stats(self, request):
+        comments = self.get_queryset()
+
+        basic_stats = comments.aggregate(
+            total_comments=Count("comment_id"),
+            avg_likes=Avg("like_count"),
+            max_likes=Max("like_count"),
+        )
+
+        top_comments = comments.order_by("-like_count")[:10].value(
+            'comment_id', 'text_display', "like_count", "author_display_name"
+        )
+        return Response(
+            {
+                "total_comments": basic_stats["total_comments"],
+                "avg_likes": basic_stats["avg_likes"],
+                "max_likes": basic_stats["max_likes"],
+                "top_comments": top_comments
+            }
+        )
+
+    @action(detail=False, methods=["get"], url_path="stats/timeline")
+    def stats_timeline(self, request):
+        comments = self.get_queryset()
+
+        timeline = comments.annotate(
+            date=TruncDate("published_at")
+        ).values("date").annotate(
+            count=Count("id")
+        ).order_by("date")
+
+        return Response(list(timeline))
+
+    # @action(detail=False, methods=["get"], url_path="word-frequency")
+    # def word_frequency(self, request):
+    #     comments = self.get_queryset()
+    #
+    #     all_text = ' '.join(comments.values_list("text_display", flat=True))
+    #
+    #     okt = Okt()
+    #     nouns = okt.nouns(all_text)
+    #
+    #     stopwords = ['이', '그', '저', '것', '수', '등', '때']
+    #     filtered_nouns = [word for word in nouns if word not in stopwords and len(word) > 1]
+    #
+    #     word_counts = Counter(filtered_nouns)
+    #     top_words = word_counts.most_common(50)
+    #
+    #     return Response(
+    #         {'total_words': len(filtered_nouns),
+    #          'unique_words': len(word_counts),
+    #          'top_words': [
+    #              {'word': word, 'count': count}
+    #              for word, count in top_words
+    #          ]}
+    #     )

@@ -186,3 +186,67 @@ def stats(self, request):
 - `aggregate`는 단일 SQL에서 `COUNT`와 `CASE WHEN`으로 처리되어 DB가 테이블을 한 번만 스캔
 - 3개의 값이 동일 시점의 스냅샷에서 계산되므로 데이터 정합성 보장 (다중 쿼리 시 사이에 데이터 변경 가능성 존재)
 - 통계 항목이 추가되어도 쿼리 수가 늘어나지 않아 확장에 유리
+
+---
+
+## Issue 8: 쿼리 파라미터 필터링 — 별도 엔드포인트 vs get_queryset 오버라이드
+
+**문제:**
+- 목록 조회 시 조건별 필터링(video_id, completed, hidden 등)을 어떻게 처리할지 설계 필요
+- 처음에는 필터 조건마다 별도 엔드포인트(커스텀 액션)를 만들어 사용했으나, `get_queryset`에서 쿼리 파라미터에 따라 동적으로 필터링하는 방식으로 변경
+
+**변경 전 — 별도 엔드포인트 방식:**
+```python
+# 조건마다 커스텀 액션 생성
+@action(detail=False, methods=['get'], url_path='completed')
+def completed_list(self, request):
+    queryset = Todo.objects.filter(completed=True)
+    ...
+
+@action(detail=False, methods=['get'], url_path='hidden')
+def hidden_list(self, request):
+    queryset = Todo.objects.filter(hidden=True)
+    ...
+```
+
+**변경 후 — get_queryset 오버라이드 방식:**
+```python
+# todos/views.py
+def get_queryset(self):
+    queryset = Todo.objects.all()
+    if not include_hidden:
+        queryset = queryset.filter(hidden=False)
+    if completed_param is not None:
+        queryset = queryset.filter(completed=is_completed)
+    return queryset
+
+# comments/views.py
+def get_queryset(self):
+    queryset = Comment.objects.all()
+    video_id = self.request.query_params.get("video_id")
+    if video_id:
+        queryset = queryset.filter(video_id=video_id)
+    return queryset
+```
+
+### 방식 1: 별도 엔드포인트 (커스텀 액션)
+
+| 장점 | 단점 |
+|---|---|
+| 각 엔드포인트의 역할이 명확하고 URL만으로 의도 파악 가능 | 필터 조건이 늘어날수록 엔드포인트가 비례하여 증가 |
+| 엔드포인트별로 독립적인 권한/스로틀 설정 가능 | 조건 조합이 필요하면 (예: 완료 + 숨김) 엔드포인트가 폭발적으로 증가 |
+| API 문서에서 각 기능이 개별 항목으로 노출 | 필터링 로직이 여러 메서드에 분산되어 중복 코드 발생 |
+
+### 방식 2: get_queryset 오버라이드 (채택)
+
+| 장점 | 단점 |
+|---|---|
+| 단일 엔드포인트에서 쿼리 파라미터 조합으로 유연한 필터링 가능 | URL만으로 어떤 필터가 지원되는지 파악 어려움 |
+| 필터 조건 추가 시 get_queryset에 조건문만 추가하면 됨 | 파라미터 검증 로직이 복잡해질 수 있음 |
+| DRF의 list/retrieve/stats 등 모든 액션에 필터가 자동 적용 | 엔드포인트별 세밀한 권한 분리가 어려움 |
+| REST 컨벤션에 부합 (`GET /todos/?completed=true&hidden=true`) | |
+
+**결론:**
+- 단순 필터링 조건은 `get_queryset` 오버라이드로 처리하는 것이 REST 컨벤션에 맞고 유지보수에 유리
+- `get_queryset`에서 필터링하면 `list`, `stats` 등 queryset을 사용하는 모든 액션에 일관되게 적용되는 이점이 있음
+- 별도 엔드포인트는 필터링이 아닌 완전히 다른 비즈니스 로직(예: `fetch-and-save`, `toggle`)에 적합
