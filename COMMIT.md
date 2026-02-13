@@ -38,3 +38,8 @@ Feat: Comment 모델 snake_case 전환 및 stats 액션 추가
 - Comments ViewSet: get_queryset 오버라이드로 video_id 필터링 추가, stats/stats_timeline 액션 추가
 - ISSUE.md: 쿼리 파라미터 필터링 설계 문서화 (Issue 8)
 - pyproject.toml: konlpy 패키지 추가
+
+Feat: videos 앱 추가 및 word-frequency 액션 활성화
+- videos 앱 생성, INSTALLED_APPS 등록
+- Video/Playlist 모델 정의 (Youtility/models.py)
+- Comments ViewSet: list 내 중복 video_id 필터링 제거, word_frequency 액션 주석 해제

@@ -27,8 +27,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Comment.objects.all()
-
         video_id = self.request.query_params.get("video_id")
+
         if video_id:
             queryset = queryset.filter(video_id=video_id)
 
@@ -131,12 +131,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-
-        video_id = request.query_params.get("video_id")
-        if video_id:
-            queryset = queryset.filter(video_id=video_id)
-
         page = self.paginate_queryset(queryset)
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
@@ -170,6 +166,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def stats_timeline(self, request):
         comments = self.get_queryset()
 
+        # QQQ
         timeline = comments.annotate(
             date=TruncDate("published_at")
         ).values("date").annotate(
@@ -178,26 +175,28 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         return Response(list(timeline))
 
-    # @action(detail=False, methods=["get"], url_path="word-frequency")
-    # def word_frequency(self, request):
-    #     comments = self.get_queryset()
-    #
-    #     all_text = ' '.join(comments.values_list("text_display", flat=True))
-    #
-    #     okt = Okt()
-    #     nouns = okt.nouns(all_text)
-    #
-    #     stopwords = ['이', '그', '저', '것', '수', '등', '때']
-    #     filtered_nouns = [word for word in nouns if word not in stopwords and len(word) > 1]
-    #
-    #     word_counts = Counter(filtered_nouns)
-    #     top_words = word_counts.most_common(50)
-    #
-    #     return Response(
-    #         {'total_words': len(filtered_nouns),
-    #          'unique_words': len(word_counts),
-    #          'top_words': [
-    #              {'word': word, 'count': count}
-    #              for word, count in top_words
-    #          ]}
-    #     )
+    @action(detail=False, methods=["get"], url_path="word-frequency")
+    def word_frequency(self, request):
+        comments = self.get_queryset()
+
+        all_text = ' '.join(comments.values_list("text_display", flat=True))
+
+        # 형태소 분석 (추후 언어별 모델 추가 예정)
+        okt = Okt()
+        nouns = okt.nouns(all_text)
+
+        # 불용어 제거
+        stopwords = ['이', '그', '저', '것', '수', '등', '때']
+        filtered_nouns = [word for word in nouns if word not in stopwords and len(word) > 1]
+
+        word_counts = Counter(filtered_nouns)
+        top_words = word_counts.most_common(50)
+
+        return Response(
+            {'total_words': len(filtered_nouns),
+             'unique_words': len(word_counts),
+             'top_words': [
+                 {'word': word, 'count': count}
+                 for word, count in top_words
+             ]}
+        )
