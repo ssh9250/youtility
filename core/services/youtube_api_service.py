@@ -78,6 +78,7 @@ class YoutubeAPIService:
 
     # ========== Videos 관련 메서드 (향후 확장) ==========
 
+    # todo: video 앱으로 이전
     def get_video_details(
         self, video_id: str, part: str = "snippet,contentDetails,statistics"
     ) -> Dict[str, Any]:
