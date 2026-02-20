@@ -44,3 +44,9 @@ class DownloadTaskCreateSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError(
             "올바른 재생목록 주소를 입력해주세요."
         )
+
+class DownloadTaskStatusSerializer(serializers.ModelSerializer):
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    class Meta:
+        model = DownloadTask
+        fields = '__all__'
