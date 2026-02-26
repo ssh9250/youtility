@@ -1,8 +1,8 @@
-# Youtility 프로젝트 요약 문서
+# ziip 프로젝트 요약 문서
 
 ## 1. 프로젝트 개요
 
-**Youtility**는 YouTube 동영상의 댓글을 크롤링하고 분석할 수 있는 웹 애플리케이션입니다.
+**ziip**은 YouTube 동영상의 댓글을 크롤링하고 분석할 수 있는 웹 애플리케이션입니다.
 
 ### 주요 목적
 - YouTube 동영상의 전체 댓글을 수집하여 데이터베이스에 저장
@@ -45,8 +45,8 @@
 ## 3. 프로젝트 구조
 
 ```
-Youtility/
-├── Youtility/                 # Django 프로젝트 설정
+ziip/
+├── ziip/                      # Django 프로젝트 설정
 │   ├── settings.py            # 프로젝트 설정 (CORS, DRF, DB 등)
 │   ├── urls.py                # 메인 URL 라우팅
 │   ├── wsgi.py                # WSGI 설정
@@ -422,8 +422,8 @@ REST_FRAMEWORK = {
 
 ```python
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'YOUTILITY',
-    'DESCRIPTION': 'API documentation for YOUTILITY',
+    'TITLE': 'config',
+    'DESCRIPTION': 'API documentation for config',
     'VERSION': '0.0.1',
     'SERVE_INCLUDE_SCHEMA': False,
 }

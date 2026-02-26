@@ -1,12 +1,12 @@
-# Youtility
+# ziip
 
 Django 6.0 web application
 
 ## Project Structure
 
 ```
-Youtility/
-├── Youtility/          # Django project settings
+ziip/
+├── ziip/               # Django project settings
 │   ├── settings.py     # Project configuration
 │   ├── urls.py         # URL routing
 │   ├── wsgi.py         # WSGI configuration

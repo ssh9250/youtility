@@ -1,11 +1,10 @@
 from django.db.models import Count, Q
-from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from todos.models import Todo
-from todos.serializers import BaseTodoSerializer, TodoListSerializer, TodoCreateSerializer, TodoUpdateSerializer, \
+from utils.todos.models import Todo
+from utils.todos.serializers import BaseTodoSerializer, TodoListSerializer, TodoCreateSerializer, TodoUpdateSerializer, \
     TodoDetailSerializer
 
 

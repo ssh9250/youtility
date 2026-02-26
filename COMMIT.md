@@ -41,5 +41,13 @@ Feat: Comment 모델 snake_case 전환 및 stats 액션 추가
 
 Feat: videos 앱 추가 및 word-frequency 액션 활성화
 - videos 앱 생성, INSTALLED_APPS 등록
-- Video/Playlist 모델 정의 (Youtility/models.py)
+- Video/Playlist 모델 정의 (ziip/models.py)
 - Comments ViewSet: list 내 중복 video_id 필터링 제거, word_frequency 액션 주석 해제
+
+Refactor: 앱 구조 도메인 네임스페이스 재구성 및 신규 서비스 스텁 추가
+- comments, videos → youtube/comments, youtube/videos 로 이동
+- todos → utils/todos 로 이동
+- web/crawling 앱 신규 추가 (HackerNews 크롤링 서비스 스텁)
+- core/services/translation_service.py: DeepL 번역 서비스 스텁 추가
+- pyproject.toml: beautifulsoup4, deepl, httpx 의존성 추가
+- Chore: 프로젝트명 youtility → ziip 변경, 문서 업데이트

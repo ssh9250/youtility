@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from videos.models import Video, DownloadTask
+from youtube.videos.models import Video, DownloadTask
 
 
 class VideoSerializer(serializers.ModelSerializer):

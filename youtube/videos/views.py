@@ -1,10 +1,9 @@
 import uuid
 
-from django.shortcuts import render
 from rest_framework import viewsets
 
-from videos.models import Video, DownloadTask
-from videos.serializers import VideoSerializer, DownloadTaskSerializer, DownloadTaskCreateSerializer, \
+from youtube.videos.models import Video, DownloadTask
+from youtube.videos.serializers import VideoSerializer, DownloadTaskSerializer, DownloadTaskCreateSerializer, \
     DownloadTaskStatusSerializer
 
 

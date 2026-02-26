@@ -34,9 +34,10 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "corsheaders",
     "core",
-    "todos",
-    "comments",
-    "videos",
+    "utils.todos",
+    "youtube.comments",
+    "youtube.videos",
+    "web.crawling"
 ]
 
 MIDDLEWARE = [
@@ -50,7 +51,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "Youtility.urls"
+ROOT_URLCONF = "ziip.urls"
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -73,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "Youtility.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -91,8 +92,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "YOUTILITY",
-    "DESCRIPTION": "API documentation for YOUTILITY",
+    "TITLE": "config",
+    "DESCRIPTION": "API documentation for config",
     "VERSION": "0.0.1",
     "SERVE_INCLUDE_SCHEMA": False,
 }

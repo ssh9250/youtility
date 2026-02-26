@@ -1,5 +1,5 @@
 """
-URL configuration for Youtility project.
+URL configuration for config project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -27,6 +27,7 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path("api/comments/", include("comments.urls")),
-    path("api/videos/", include("videos.urls")),
+    path("api/comments/", include("youtube.comments.urls")),
+    path("api/videos/", include("youtube.videos.urls")),
+    path("api/crawling/", include("web.crawling.urls")),
 ]
