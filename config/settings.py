@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "corsheaders",
     "core",
+    "finance.stocks"
     "utils.todos",
     "youtube.comments",
     "youtube.videos",
