@@ -23,7 +23,7 @@ class Holding(models.Model):
     def __str__(self):
         return f"{self.ticker} × {self.quantity}"
 
-    # --- 계산 프로퍼티 (실제 현재가는 service 레이어에서 주입) --
+    # --- 계산 프로퍼티 (실제 현재가는 service 레이어에서 주입) ---
     @property
     def total_cost(self) -> Decimal:
         """총 매수 금액."""

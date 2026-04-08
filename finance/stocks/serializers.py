@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Holding, NewsItem   # 실제 코드에서 주석 해제
+from .models import Holding, NewsItem
 
 
 class NewsItemSerializer(serializers.ModelSerializer):
@@ -12,7 +12,7 @@ class HoldingSerializer(serializers.ModelSerializer):
     """기본 CRUD용."""
 
     class Meta:
-        model = None  # Holding
+        model = Holding
         fields = [
             "id", "ticker", "name",
             "quantity", "avg_price", "currency",

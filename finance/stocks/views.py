@@ -3,12 +3,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
-# from .models import Holding, NewsItem
-# from .serializers import (
-#     HoldingSerializer, PortfolioSummarySerializer, NewsItemSerializer
-# )
-# from .services.stock_service import StockService
-# from .services.news_service import NewsService
+from .models import Holding, NewsItem
+from .serializers import (
+    HoldingSerializer, PortfolioSummarySerializer, NewsItemSerializer
+)
+from .services.stock_service import StockService
+from .services.news_service import NewsService
 
 
 class HoldingViewSet(viewsets.ModelViewSet):

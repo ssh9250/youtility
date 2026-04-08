@@ -1,6 +1,6 @@
-# from celery import shared_task
-# from .models import Holding, NewsItem
-# from .services.news_service import NewsService
+from celery import shared_task
+from .models import Holding, NewsItem
+from .services.news_service import NewsService
 
 
 # @shared_task

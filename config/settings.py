@@ -34,11 +34,11 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "corsheaders",
     "core",
-    "finance.stocks"
+    "finance.stocks",
     "utils.todos",
     "youtube.comments",
     "youtube.videos",
-    "web.crawling"
+    "web.crawling",
 ]
 
 MIDDLEWARE = [
@@ -52,7 +52,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "ziip.urls"
+ROOT_URLCONF = "config.urls"
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",

@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-# from .views import HoldingViewSet
+from .views import HoldingViewSet
 
 router = DefaultRouter()
 # router.register(r"holdings", HoldingViewSet, basename="holding")
